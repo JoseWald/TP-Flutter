@@ -1,209 +1,284 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const CardGameApp());
+  runApp(const MyApp());
 }
 
-class CardGameApp extends StatelessWidget {
-  const CardGameApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Card Game',
+      title: 'Boutique en ligne',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: const CardGameScreen(),
+      home: const ProductListScreen(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
 
-class CardGameScreen extends StatefulWidget {
-  const CardGameScreen({super.key});
+class Product {
+  final String id;
+  final String name;
+  final String description;
+  final double price;
+  final String imageAsset;
 
-  @override
-  State<CardGameScreen> createState() => _CardGameScreenState();
+  Product({
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.price,
+    required this.imageAsset,
+  });
 }
 
-class _CardGameScreenState extends State<CardGameScreen> {
-  final List<Map<String, dynamic>> initialCards = [
-    {'id': 'CO', 'value': 1, 'suit': 'carreau'},
-    {'id': 'C1', 'value': 2, 'suit': 'carreau'},
-    {'id': 'C2', 'value': 3, 'suit': 'carreau'},
-    {'id': 'C3', 'value': 4, 'suit': 'carreau'},
-    {'id': 'C4', 'value': 5, 'suit': 'carreau'},
-    {'id': 'C5', 'value': 6, 'suit': 'carreau'},
-    {'id': 'C7', 'value': 7, 'suit': 'carreau'},
-    {'id': 'C8', 'value': 8, 'suit': 'carreau'},
-  ];
+final List<Product> products = [
+  Product(
+    id: '1',
+    name: 'Smartphone Premium',
+    description: 'Écran 6.7", 256GB de stockage, triple caméra',
+    price: 899.99,
+    imageAsset: 'assets/images/phone.jpg',
+  ),
+  Product(
+    id: '2',
+    name: 'Écouteurs Sans Fil',
+    description: 'Réduction de bruit active, autonomie 30h',
+    price: 179.99,
+    imageAsset: 'assets/images/headphones.jpg',
+  ),
+  Product(
+    id: '3',
+    name: 'Montre Connectée',
+    description: 'Suivi santé, GPS, étanche 5ATM',
+    price: 249.99,
+    imageAsset: 'assets/images/watch.jpg',
+  ),
+  Product(
+    id: '4',
+    name: 'Ultrabook Pro',
+    description: '16Go RAM, SSD 1To, processeur i7',
+    price: 1499.99,
+    imageAsset: 'assets/images/laptop.jpg',
+  ),
+];
 
-  List<Map<String, dynamic>> cards = [];
-
-  @override
-  void initState() {
-    super.initState();
-    cards = List.from(initialCards);
-  }
-
-  void handleCenterCellClick() {
-    setState(() {
-      for (var card in cards) {
-        if (card['value'] == 1) {
-          card['value'] = 7;
-        } else {
-          card['value'] = card['value'] + 1;
-        }
-      }
-    });
-  }
-
-  void handleCardClick(int index) {
-    setState(() {
-      switch (cards[index]['suit']) {
-        case 'carreau':
-          cards[index]['suit'] = 'coeur';
-          break;
-        case 'coeur':
-          cards[index]['suit'] = 'pique';
-          break;
-        case 'pique':
-          cards[index]['suit'] = 'trèfle';
-          break;
-        case 'trèfle':
-          cards[index]['suit'] = 'carreau';
-          break;
-      }
-    });
-  }
-
-  String getSuitSymbol(String suit) {
-    switch (suit) {
-      case 'carreau':
-        return '♦';
-      case 'coeur':
-        return '♥';
-      case 'pique':
-        return '♠';
-      case 'trèfle':
-        return '♣';
-      default:
-        return '?';
-    }
-  }
-
-  Color getSuitColor(String suit) {
-    return (suit == 'carreau' || suit == 'coeur') ? Colors.red : Colors.black;
-  }
-
-  Widget _buildCardCell(int cardIndex) {
-    final card = cards[cardIndex];
-    final value = card['value'];
-    final suit = card['suit'];
-    final suitSymbol = getSuitSymbol(suit);
-    final suitColor = getSuitColor(suit);
-
-    return GestureDetector(
-      onTap: () => handleCardClick(cardIndex),
-      child: Container(
-        height: 120,
-        margin: const EdgeInsets.all(6),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 6,
-              offset: Offset(2, 2),
-            ),
-          ],
-          border: Border.all(color: Colors.black),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(6.0),
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: Text(
-                  '$value\n$suitSymbol',
-                  style: TextStyle(
-                    color: suitColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 6.0),
-              child: Align(
-                alignment: Alignment.bottomRight,
-                child: RotatedBox(
-                  quarterTurns: 2,
-                  child: Text(
-                    '$value\n$suitSymbol',
-                    style: TextStyle(
-                      color: suitColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCenterCell() {
-    return GestureDetector(
-      onTap: handleCenterCellClick,
-      child: Container(
-        padding: const EdgeInsets.all(8.0),
-        height: 120,
-        color: Colors.grey[200],
-        child: const Center(
-          child: Text('Click to increase values'),
-        ),
-      ),
-    );
-  }
+class ProductListScreen extends StatelessWidget {
+  const ProductListScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Card Game'),
+        title: const Text('Nos Produits'),
+        centerTitle: true,
       ),
-      body: Center(
-        child: Table(
-          border: TableBorder.all(),
+      body: ListView.separated(
+        padding: const EdgeInsets.all(16),
+        itemCount: products.length,
+        separatorBuilder: (context, index) => const SizedBox(height: 16),
+        itemBuilder: (context, index) {
+          final product = products[index];
+          return ProductCard(product: product);
+        },
+      ),
+    );
+  }
+}
+
+class ProductCard extends StatelessWidget {
+  final Product product;
+
+  const ProductCard({super.key, required this.product});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProductDetailScreen(product: product),
+            ),
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Image à gauche
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.asset(
+                  product.imageAsset,
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      width: 100,
+                      height: 100,
+                      color: Colors.grey[200],
+                      child: const Icon(Icons.image_not_supported),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(width: 16),
+              // Détails à droite
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      product.name,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      product.description,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '${product.price} €',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ProductDetailScreen extends StatelessWidget {
+  final Product product;
+
+  const ProductDetailScreen({super.key, required this.product});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(product.name),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
           children: [
-            TableRow(
-              children: [
-                _buildCardCell(0),
-                _buildCardCell(1),
-                _buildCardCell(2),
-              ],
+            // Grande image du produit
+            Hero(
+              tag: 'product-image-${product.id}',
+              child: Image.asset(
+                product.imageAsset,
+                width: double.infinity,
+                height: 300,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    height: 300,
+                    color: Colors.grey[200],
+                    child: const Center(
+                      child: Icon(Icons.image_not_supported, size: 50),
+                    ),
+                  );
+                },
+              ),
             ),
-            TableRow(
-              children: [
-                _buildCardCell(6),
-                _buildCenterCell(),
-                _buildCardCell(3),
-              ],
-            ),
-            TableRow(
-              children: [
-                _buildCardCell(7),
-                _buildCardCell(5),
-                _buildCardCell(4),
-              ],
+            // Détails du produit
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    product.name,
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    product.description,
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.green[50],
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Prix:',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          '${product.price} €',
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.green,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      icon: const Icon(Icons.shopping_cart),
+                      label: const Text('Ajouter au panier'),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('${product.name} ajouté au panier'),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
